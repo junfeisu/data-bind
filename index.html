@@ -8,7 +8,13 @@
 </head>
 <body>
   <div id="test">
-    <p sjf-for="list in lists">{{list}}</p>
+    <p sjf-for="list in lists">
+      <span>{{list}}</span>
+    </p>
+    <button sjf-click="add()">add</button>
+  </div>
+  <div id="sjf">
+    <p sjf-for="sjf in sjfs">{{sjf}}</p>
   </div>
   <script type="text/javascript" src="build/js/index.js"></script>
   <script type="text/javascript" src="example/example.js"></script>

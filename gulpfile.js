@@ -10,7 +10,7 @@ gulp.task('serve', ['scripts'], function() {
   gulp.watch('source/style/*.scss', ['styles']);
   gulp.watch(['model/*.js', '!build/js/*.min.js'], ['scripts']);
   gulp.watch('source/image/*', ['images']);
-  gulp.watch('build/**').on('change', browserSync.reload);
+  gulp.watch(['build/**', 'index.html', 'example/**']).on('change', browserSync.reload);
 })
 
 // js处理
