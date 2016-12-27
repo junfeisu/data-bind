@@ -6,8 +6,9 @@
       (global.sjfDataBind = factory())
 })(typeof window != 'undefined' ? window : this, function () {
   'use strict'
-  var watchers = []
-  var priority = {
+  const priority = {
+    'sjf-if': 2000,
+    'sjf-show': 2000,
     'sjf-for': 1000,
     'sjf-click': 100,
     'sjf-mouseover': 100,
@@ -22,72 +23,110 @@
     'sjf-text': 1
   }
 
+  const sjfEvents = [
+    'sjf-click', 
+    'sjf-mouseover', 
+    'sjf-mouseout', 
+    'sjf-mousemove', 
+    'sjf-mouseenter',
+    'sjf-mouseleave',
+    'sjf-mousedown',
+    'sjf-mouseup'
+  ]
+
   // judge the type of obj
-  var judgeType = function (obj) {
+  const judgeType = function (obj) {
     return Object.prototype.toString.call(obj)
   }
 
-  var isInherit = function (instance, parent) {}
+  // remove the prefix of sjf-
+  const removePrefix = function (str) {
+    return str = str.replace(/sjf-/, '')
+  }
 
-  var render = function (param) {
-    if (!param.hasOwnProperty('html')) {
-      console.warn('sjf[warn]: There is need the `html` key in param of render')
+  // remove the brackets ()
+  const removeBrackets = function (str) {
+    str = str.replace(/\"/g, '')
+    // console.log("str is " + str)
+    return str = str.replace(/\(\)/, '')
+  }
+
+  // traverse the DOM
+  function circleElement (parent, isFirst) {
+    let child = parent.children
+    if (isFirst && !child.length) {
+      link.call(this)
       return
     }
-    var body = document.querySelector('body')
-    param.parent ? body.innerHTML = param.html : parent.innerHTML = param.html
+    for (let i = child.length - 1; i >= 0; i--) {
+      let node = child[i]
+      if (!!node.children.length) {
+        circleElement.call(this, node, false)
+      } else {
+        compileNode.call(this, node)
+      }
+    }
+    if (this._el.lastElementChild === child[child.length - 1]) {
+      link.call(this)
+    }
+  }
+
+  let compileNode = function (node) {
+    let matchExpress = /sjf-.+=\".+\"|\{\{.+\}\}/
+    if (matchExpress.test(node.outerHTML)) {
+      let directives = matchExpress.exec(node.outerHTML)
+      directives.forEach((value) => {
+        let slices = value.split('=')
+        if (sjfEvents.indexOf(slices[0]) >= 0) {
+          let eventType = removePrefix(slices[0])
+          let eventFunc = this['_' + removeBrackets[slices[1]]]
+          node.addEventListener(eventType, eventFunc, false)
+        }
+      })
+      node.outerHTML = node.outerHTML.replace(matchExpress, "");
+      this._uncompileNodes.push(node)
+    }
   }
 
   // compile the sjf
-  var compile = function () {
-    var self = this
-    var sjfElements = Array.from(self._el.querySelectorAll('[sjf-for]'))
-    var sForList = []
-    sjfElements.forEach(function (value) {
-      var message = value.getAttribute('sjf-for').replace(/\s/g, "/")
-      var slices = message.split("/")
-      sForList.push({instance: slices[0], parent: slices[2]})
-    })
-
-    sjfElements.forEach(function (value, index) {
-      var dataName = sForList[index].parent
-      var instanceName = sForList[index].instance
-      var instance = self._data[instanceName]
-      var data = self._data[dataName]
-      var nodeType = value.nodeName.toLowerCase()
-      // to deal the null and type error
-      if (!(data || (self._data[sForList[index - 1].parent] && index > 0))) {
-        console.error('sjf[error]: please add the ' + dataName + ' into data')
-        return
-      }
-      // if (judgeType(data) !== '[object Array]') {
-        //   console.warn('sjf[warn]: the ' + dataName + ' is not a Array')
-      //   return
-      // }
-      console.log(instanceName)
-      var re = new RegExp("{{" + instanceName + "}}", "g")
-      for (var i = 0; i < data.length; i++) {
-        var html = value.innerHTML.replace(re, data[i])
-        var newElement = document.createElement(nodeType)
-        newElement.innerHTML = html
-        value.parentElement.appendChild(newElement)
-      }
-      value.parentElement.removeChild(value)
-    })
+  let compile = function () {
+    circleElement.call(this, this._el, true)
   }
 
-  var link = function () {
-    console.log('link')
+  const linkRender = {
+    'sjf-if': function (value) {
+      this.style.display = (!!value ? 'block!important' : 'none!important')
+    },
+    'sjf-show': function (value) {
+      this.style.display = (!!value ? 'block!important' : 'none!important')
+    },
+    'sjf-for': function () {
+
+    },
+    'sjf-text': function (value) {
+      this.innerText = value
+    }
+  }
+
+  let link = function () {
+    let self = this
+    if (!!self._uncompileNodes.length) {
+      self._uncompileNodes.forEach(value => {
+        let attributes = value.attributes
+        console.log(attributes)
+      })
+    }
   }
 
   function Sjf (param) {
-    console.log('123')
     if (!param.hasOwnProperty('el') || !param.hasOwnProperty('data')) {
-      console.error('sjf[error]: There is need `data` and `el` attribute');
-      return;
+      console.error('sjf[error]: There is need `data` and `el` attribute')
+      return
     }
     this._el = document.querySelector(param.el)
     this._data = param.data
+    this._watchers = []
+    this._uncompileNodes = []
     for (var method in param.methods) {
       this['_' + method] = param.methods[method]
     }
