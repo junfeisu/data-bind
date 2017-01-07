@@ -10,9 +10,9 @@ var test = new sjfDataBind({
   }
 })
 
-var abc = new sjfDataBind({
-  el: '#sjf',
-  data: {
-    sjfs: ['123', '234']
-  }
-})
+// var abc = new sjfDataBind({
+//   el: '#sjf',
+//   data: {
+//     sjfs: ['123', '234']
+//   }
+// })

@@ -25,5 +25,8 @@
     "gulp-uglify": "^1.5.4"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "gulp-eslint": "^3.0.1"
+  }
 }

@@ -16,6 +16,9 @@ gulp.task('serve', ['scripts'], function() {
 // js处理
 gulp.task('scripts', function() {
   return gulp.src(['model/*.js', '!build/js/*.min.js'])
+    .pipe(plugins.eslint())
+    .pipe(plugins.eslint.format())
+    .pipe(plugins.eslint.failAfterError())
     .pipe(plugins.concat('index.js'))
     .pipe(gulp.dest('build/js/'))
     .pipe(plugins.rename({ suffix: '.min' }))
