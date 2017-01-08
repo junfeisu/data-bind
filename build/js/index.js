@@ -41,8 +41,16 @@
     return str = str.replace(/\(\)/, '')
   }
 
+  const sortExexuteQueue = function (property, objArr) {
+    return objArr.sort((obj1, obj2) => {
+      var val1 = priority[obj1[property]]
+      var val2 = priority[obj2[property]]
+      return val2 - val1
+    })
+  }
+
   // traverse the DOM
-  function circleElement (parent, isFirst) {
+  const circleElement = function (parent, isFirst) {
     let child = parent.children
     if (isFirst && !child.length) {
       link.call(this)
@@ -66,7 +74,7 @@
     }
   }
 
-  let compileNode = function (node) {
+  const compileNode = function (node) {
     let matchExpress = /sjf-.+=\".+\"|\{\{.+\}\}/
     if (matchExpress.test(node.outerHTML)) {
       let directives = matchExpress.exec(node.outerHTML)
@@ -92,31 +100,31 @@
   }
 
   // compile the sjf
-  let compile = function () {
+  const compile = function () {
     circleElement.call(this, this._el, true)
   }
 
   const linkRender = {
     'sjf-if': function (value) {
-      this.style.display = (!!value ? 'block!important' : 'none!important')
+      value.node.style.display = (!!(value.expression) ? 'block!important' : 'none!important')
     },
     'sjf-show': function (value) {
-      this.style.display = (!!value ? 'block!important' : 'none!important')
+      value.node.style.display = (!!(value.expression) ? 'block!important' : 'none!important')
     },
-    'sjf-for': function () {
-
+    'sjf-for': function (value) {
+      let expressionSlices = value.expression.split()
     },
     'sjf-text': function (value) {
       this.innerText = value
     }
   }
 
-  let link = function () {
+  const link = function () {
     let self = this
     if (!!self._unlinkNodes.length) {
-      self._unlinkNodes.forEach(value => {
-        let attributes = value
-        console.log(attributes)
+      let executeQueue = sortExexuteQueue('directive', self._unlinkNodes)
+      executeQueue.forEach(value => {
+        linkRender[value.directive](value)
       })
     }
   }
@@ -132,7 +140,7 @@
     this._uncompileNodes = []
     this._unlinkNodes = []
     for (var method in param.methods) {
-      this['_' + method] = param.methods[method]
+      this['_' + method] = param.methods[method].bind(this)
     }
     compile.call(this)
   }
