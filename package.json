@@ -27,7 +27,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "gulp-eslint": "^3.0.1",
     "gulp-plumber": "^1.1.0"
   }
 }

@@ -5,7 +5,7 @@ var test = new sjfDataBind({
   },
   methods: {
     add: function () {
-      this.lists.push(['31231'])
+      console.log('123')
     }
   }
 })
@@ -16,3 +16,7 @@ var test = new sjfDataBind({
 //     sjfs: ['123', '234']
 //   }
 // })
+
+// document.querySelector('#test').lastElementChild.addEventListener('click', function () {
+//   console.log('123')
+// }, false)

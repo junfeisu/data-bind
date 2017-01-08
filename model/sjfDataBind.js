@@ -48,12 +48,17 @@
       link.call(this)
       return
     }
-    for (let i = child.length - 1; i >= 0; i--) {
+    for (let i = 0; i < child.length; i++) {
       let node = child[i]
       if (!!node.children.length) {
         circleElement.call(this, node, false)
+        this._uncompileNodes.push(node)
       } else {
-        compileNode.call(this, node)
+        this._uncompileNodes.push(node)
+        this._uncompileNodes.forEach(value => {
+          compileNode.call(this, value)
+        })
+        this._uncompileNodes = []
       }
     }
     if (this._el.lastElementChild === child[child.length - 1]) {
@@ -68,13 +73,21 @@
       directives.forEach((value) => {
         let slices = value.split('=')
         if (sjfEvents.indexOf(slices[0]) >= 0) {
+          node.removeAttribute(slices[0])
           let eventType = removePrefix(slices[0])
-          let eventFunc = this['_' + removeBrackets[slices[1]]]
+          let eventFunc = this['_' + removeBrackets(slices[1])]
           node.addEventListener(eventType, eventFunc, false)
+        } else {
+          if (/\{\{.+\}\}/.test(value)) {
+            node.outerHTML = node.outerHTML.replace(matchExpress, "")
+            slices[0] = slices[0].replace(/[\{\}]/g, "")
+            this._unlinkNodes.push({node: node, directive: 'sjf-text', expression: slices[0]})
+          } else {
+            slices[1] = slices[1].replace(/\"/g, "")
+            this._unlinkNodes.push({node: node, directive: slices[0], expression: slices[1]})
+          }
         }
       })
-      node.outerHTML = node.outerHTML.replace(matchExpress, "");
-      this._uncompileNodes.push(node)
     }
   }
 
@@ -100,9 +113,9 @@
 
   let link = function () {
     let self = this
-    if (!!self._uncompileNodes.length) {
-      self._uncompileNodes.forEach(value => {
-        let attributes = value.attributes
+    if (!!self._unlinkNodes.length) {
+      self._unlinkNodes.forEach(value => {
+        let attributes = value
         console.log(attributes)
       })
     }
@@ -117,6 +130,7 @@
     this._data = param.data
     this._watchers = []
     this._uncompileNodes = []
+    this._unlinkNodes = []
     for (var method in param.methods) {
       this['_' + method] = param.methods[method]
     }
