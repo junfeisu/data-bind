@@ -7,46 +7,105 @@
 })(typeof window != 'undefined' ? window : this, function () {
   'use strict'
   const priority = {
+    'sjf-if': 2000,
+    'sjf-show': 2000,
     'sjf-for': 1000,
-    'sjf-click': 100,
-    'sjf-mouseover': 100,
-    'sjf-mouseout': 100,
-    'sjf-mousemove': 100,
-    'sjf-mouseenter': 100,
-    'sjf-mouseleave': 100,
-    'sjf-mousedown': 100,
-    'sjf-mouseup': 100,
-    'sjf-change': 100,
     'sjf-model': 10,
     'sjf-text': 1
   }
+
+  const sjfEvents = [
+    'sjf-click', 
+    'sjf-mouseover', 
+    'sjf-mouseout', 
+    'sjf-mousemove', 
+    'sjf-mouseenter',
+    'sjf-mouseleave',
+    'sjf-mousedown',
+    'sjf-mouseup'
+  ]
 
   // judge the type of obj
   const judgeType = function (obj) {
     return Object.prototype.toString.call(obj)
   }
 
-  // compile the sjf
-  let compile = function () {
-    let self = this
-    let html = self._el.innerHTML
-    let matchExpress = /sjf-.+=\".+\"|\{\{.+\}\}/g
-    let results = html.match(matchExpress)
-    if (results.length !== 0) {
-      results.forEach(value => {
-        if (value.indexOf('=') < 0) {
-          let slices = value.match(/\w+/g)
-          self._watchers.push({ref: self._el, name: 'text', expression: slices[0], filters: slices[1]})
-        } else {
-          let slices = value.split('=')
-          self._watchers.push({ref: self._el, name: slices[0], expression: slices[1], filters: slices[1].split("| ")[1]})
-        }
-      })
+  // remove the prefix of sjf-
+  const removePrefix = function (str) {
+    return str = str.replace(/sjf-/, '')
+  }
+
+  // remove the brackets ()
+  const removeBrackets = function (str) {
+    str = str.replace(/\"/g, '')
+    return str = str.replace(/\(\)/, '')
+  }
+
+  // traverse the DOM
+  function circleElement (parent, isFirst) {
+    let child = parent.children
+    if (isFirst && !child.length) {
+      link.call(this)
+      return
+    }
+    for (let i = child.length - 1; i >= 0; i--) {
+      let node = child[i]
+      if (!!node.children.length) {
+        circleElement.call(this, node, false)
+      } else {
+        compileNode.call(this, node)
+      }
+    }
+    if (this._el.lastElementChild === child[child.length - 1]) {
+      link.call(this)
     }
   }
 
+  let compileNode = function (node) {
+    let matchExpress = /sjf-.+=\".+\"|\{\{.+\}\}/
+    if (matchExpress.test(node.outerHTML)) {
+      let directives = matchExpress.exec(node.outerHTML)
+      directives.forEach((value) => {
+        let slices = value.split('=')
+        if (sjfEvents.indexOf(slices[0]) >= 0) {
+          let eventType = removePrefix(slices[0])
+          let eventFunc = this['_' + removeBrackets[slices[1]]]
+          node.addEventListener(eventType, eventFunc, false)
+        }
+      })
+      node.outerHTML = node.outerHTML.replace(matchExpress, "");
+      this._uncompileNodes.push(node)
+    }
+  }
+
+  // compile the sjf
+  let compile = function () {
+    circleElement.call(this, this._el, true)
+  }
+
+  const linkRender = {
+    'sjf-if': function (value) {
+      this.style.display = (!!value ? 'block!important' : 'none!important')
+    },
+    'sjf-show': function (value) {
+      this.style.display = (!!value ? 'block!important' : 'none!important')
+    },
+    'sjf-for': function () {
+
+    },
+    'sjf-text': function (value) {
+      this.innerText = value
+    }
+  }
 
   let link = function () {
+    let self = this
+    if (!!self._uncompileNodes.length) {
+      self._uncompileNodes.forEach(value => {
+        let attributes = value.attributes
+        console.log(attributes)
+      })
+    }
   }
 
   function Sjf (param) {
@@ -57,6 +116,7 @@
     this._el = document.querySelector(param.el)
     this._data = param.data
     this._watchers = []
+    this._uncompileNodes = []
     for (var method in param.methods) {
       this['_' + method] = param.methods[method]
     }
