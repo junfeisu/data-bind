@@ -16,9 +16,11 @@ gulp.task('serve', ['scripts'], function() {
 // js处理
 gulp.task('scripts', function() {
   return gulp.src(['model/*.js', '!build/js/*.min.js'])
-    .pipe(plugins.eslint())
-    .pipe(plugins.eslint.format())
-    .pipe(plugins.eslint.failAfterError())
+    .pipe(plugins.plumber({
+      errorHandler: function (error) {
+        console.log(error.message)
+      }
+    }))
     .pipe(plugins.concat('index.js'))
     .pipe(gulp.dest('build/js/'))
     .pipe(plugins.rename({ suffix: '.min' }))
@@ -30,6 +32,7 @@ gulp.task('scripts', function() {
 // 样式表处理
 gulp.task('styles', function() {
   return gulp.src('./source/style/*.scss')
+    .pipe(plugins.sass().on('error', plugins.sass.logError))
     .pipe(plugins.sass({ style: 'expanded' }))
     .pipe(plugins.autoprefixer('last 2 version', 'safari 5', 'ie 8', 'ie 9', 'opera 12.1', 'ios 6', 'android 4'))
     .pipe(gulp.dest('./build/css/'))

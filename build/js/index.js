@@ -10,15 +10,6 @@
     'sjf-if': 2000,
     'sjf-show': 2000,
     'sjf-for': 1000,
-    'sjf-click': 100,
-    'sjf-mouseover': 100,
-    'sjf-mouseout': 100,
-    'sjf-mousemove': 100,
-    'sjf-mouseenter': 100,
-    'sjf-mouseleave': 100,
-    'sjf-mousedown': 100,
-    'sjf-mouseup': 100,
-    'sjf-change': 100,
     'sjf-model': 10,
     'sjf-text': 1
   }
@@ -47,7 +38,6 @@
   // remove the brackets ()
   const removeBrackets = function (str) {
     str = str.replace(/\"/g, '')
-    // console.log("str is " + str)
     return str = str.replace(/\(\)/, '')
   }
 
