@@ -18,4 +18,4 @@ const option = {
   ]
 }
 
-module.exports = option
+export default option
