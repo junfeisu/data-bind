@@ -4,24 +4,25 @@ import option from './option'
 // 递归DOM树
 const circleElement = function (parent, isFirst) {
   let child = parent.children
+  let self = this
   // 如果是第一次遍历并且没有子节点就直接跳过compile
   if (isFirst && !child.length) {
     link.bind(this)()
     return
   }
-  for (let i = 0; i < child.length; i++) {
-    let node = child[i]
+
+  Array.prototype.forEach.call(child, node => {
     if (!!node.children.length) {
-      circleElement.bind(this)(node, false)
-      this._uncompileNodes.push(node)
+      circleElement.bind(self)(node, false)
+      self._uncompileNodes.push(node)
     } else {
-      this._uncompileNodes.push(node)
-      this._uncompileNodes.forEach(value => {
-        compileNode.bind(this)(value)
+      self._uncompileNodes.push(node)
+      self._uncompileNodes.forEach(value => {
+        compileNode.bind(self)(value)
       })
-      this._uncompileNodes = []
+      self._uncompileNodes = []
     }
-  }
+  })
   // 如果当前节点是这个Sjf实例的根节点的最后一个子节点就跳出递归
   if (this._el.lastElementChild === child[child.length - 1]) {
     link.bind(this)()
@@ -44,11 +45,11 @@ const compileNode = function (node) {
       } else {
         // 对{{}}这种表达式进行单独处理
         if (/\{\{.+\}\}/.test(value)) {
-          node.outerHTML = node.outerHTML.replace(matchExpress, '')
-          slices[0] = slices[0].replace(/[\{\}]/g, '')
-          this._unlinkNodes.push({node: node, directive: 'sjf-text', expression: slices[0]})
+          // node.outerHTML = node.outerHTML.replace(matchExpress, '')
+          let expression = slices[0].replace(/[\{\}]/g, '')
+          this._unlinkNodes.push({node: node, directive: 'sjf-text', expression: expression})
         } else {
-          node.removeAttribute(slices[0])
+          // node.removeAttribute(slices[0])
           slices[1] = slices[1].replace(/\"/g, '')
           this._unlinkNodes.push({node: node, directive: slices[0], expression: slices[1]})
         }

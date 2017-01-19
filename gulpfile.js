@@ -14,7 +14,7 @@ gulp.task('serve', ['scripts'], function () {
   })
 
   gulp.watch('source/style/*.scss', ['styles']);
-  gulp.watch(['source/javascript/*.js', '!build/js/*.min.js'], ['eslint', 'scripts']);
+  gulp.watch(['source/javascript/*.js'], ['eslint', 'scripts']);
   gulp.watch('source/image/*', ['images']);
   gulp.watch(['build/**', 'index.html', 'example/**']).on('change', browserSync.reload);
 })
