@@ -1,4 +1,4 @@
-var test = new Sjf.default({
+var test = new SjfDataBind.default({
   el: '#test',
   data: {
     lists: ['test', 'hhh']
@@ -10,10 +10,3 @@ var test = new Sjf.default({
     }
   }
 })
-
-// var abc = new sjfDataBind({
-//   el: '#sjf',
-//   data: {
-//     sjfs: ['123', '234']
-//   }
-// })

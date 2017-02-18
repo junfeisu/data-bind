@@ -16,7 +16,7 @@ gulp.task('serve', ['scripts'], function () {
   gulp.watch('source/style/*.scss', ['styles']);
   gulp.watch(['source/javascript/*.js'], ['eslint', 'scripts']);
   gulp.watch('source/image/*', ['images']);
-  gulp.watch(['build/**', 'index.html', 'example/**']).on('change', browserSync.reload);
+  gulp.watch(['build/js/*.js', 'index.html', 'example/**']).on('change', browserSync.reload);
 })
 
 // js处理
@@ -97,6 +97,4 @@ gulp.task('clean', function (callback) {
   plugins.del(['./build/js', 'build/css'], callback)
 });
 
-gulp.task('server', ['serve'])
-
-gulp.task('default', ['server'])
+gulp.task('default', ['serve'])
