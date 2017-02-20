@@ -1,34 +1,48 @@
-import util from './utils'
-
-const linkRender = {
-  'sjf-if': function (value) {
-    value.node.style.display = (!!(value.expression) ? 'block!important' : 'none!important')
-  },
-  'sjf-show': function (value) {
-    value.node.style.display = (!!(value.expression) ? 'block!important' : 'none!important')
-  },
-  'sjf-for': function (value) {
-    // 将表达式通过空格(不限空格数目)给切开
-    let expressionSlices = value.expression.split(/\s+/)
-    if (!isNaN(expressionSlices[2]) && this._data.hasOwnProperty(expressionSlices[2])) {
-      this._watchers.push(this._data[expressionSlices[2]])
-    }
-    for (let i = 0; i < this._data[expressionSlices[2]].length; i++) {
-      let clonedNode = value.node.cloneNode(true)
-      value.node.parentElement.insertBefore(clonedNode, value.node)
-    }
-  },
-  'sjf-text': function (value) {
-    this.innerText = this._data[value.expression]
-  }
-}
+import option from './option'
+import render from './render'
 
 class link {
-   constructor (sjfDataBind) {
-    if (!!sjfDataBind._unlinkNodes.length) {
-      let executeQueue = util.sortExexuteQueue('directive', sjfDataBind._unlinkNodes)
-      executeQueue.forEach(value => {
-        linkRender[value.directive].bind(sjfDataBind)(value)
+  constructor (sjf) {
+    this.sjf = sjf
+    let hasUnlinkNode = this.sjf._unlinkNodes.length
+    if (hasUnlinkNode) {
+      let extractReg = /sjf-[a-z]+=\"[^"]+\"|\{\{.+\}\}/g
+      this.sjf._unlinkNodes.forEach((value) => {
+        let directives = (value.outerHTML).match(extractReg)
+        directives.forEach(val => {
+          this.extractDirective(val, value)
+        })
+      })
+      this._unlinkNodes = []
+      new render(this.sjf)
+    }
+  }
+
+  // 提取指令
+  extractDirective (directive, node) {
+    let slices = directive.split('=')
+    // 如果是事件就直接通过addEventListener进行绑定
+    if (option.sjfEvents.indexOf(slices[0]) >= 0) {
+      let eventMes = {
+        type: 'event',
+        target: node,
+        name: slices[0],
+        func: slices[1]
+      }
+      this.sjf._unrenderNodes.push(eventMes)
+    } else {
+      let expression = slices[0].replace(/[\{\}]/g, '')
+      let directiveName = 'sjf-text'
+      // 对非{{}}这种表达式进行单独处理
+      if (!/\{\{.+\}\}/.test(directive)) {
+        expression = slices[1].replace(/\"/g, '')
+        directiveName = slices[0]
+      }
+      this.sjf._unrenderNodes.push({
+        type: 'directive',
+        node: node, 
+        directive: directiveName, 
+        expression: expression
       })
     }
   }
