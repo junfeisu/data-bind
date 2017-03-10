@@ -9,10 +9,13 @@
 </head>
 <body>
   <div id="test">
-    <p class="test" sjf-for="list in lists">
+    <div class="test" sjf-for="list in lists">
       {{list}}
-      <span>{{list}}</span>
-    </p>
+      <p class="outer">
+        234
+        <span class="inner">123</span>
+      </p>
+    </div>
     <button sjf-click="add()">add</button>
   </div>
   <script type="text/javascript" src="example/example.js"></script>

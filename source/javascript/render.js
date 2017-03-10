@@ -17,7 +17,7 @@ const linkRender = {
     // 判断待循环的是否能进行循环
     let isLoopable = toLoopObject instanceof Array || !isNaN(toLoopObject)
     if (!isLoopable) {
-      console.error('the toLoopObject of sjf-for should be a number or Array')
+      console.error('the toLoopObject of sjf-for should be a number or an Array')
       return 
     }
     // 判断是数组还是数字，从而赋值length
@@ -31,11 +31,12 @@ const linkRender = {
     }
 
     if (toLoopObject && isArray) {
-      this._watchers.push(this._data[toLoopObject])
+      this._watchers.push(toLoopObject)
     }
   },
   'sjf-text': function (value) {
-    this.innerText = this._data[value.expression]
+    console.log(value)
+    value.node.innerText = this._data[value.expression]
   }
 }
 

@@ -5,44 +5,50 @@
   constructor (parent, isFirst, sjf) {
     this.sjf = sjf
     let child = parent.children
+    let childLen = child.length
+    let rootContent = parent.innerHTML
     // 如果是第一次遍历并且没有子节点就直接跳过compile
-    if (isFirst && !child.length) {
-      this.hasDirective(parent)
-      new link(this.sjf)
+    if (isFirst && !childLen) {
+      this.compileNode()
     }
-
-    for (let i = 0; i < child.length; i++) {
+    // console.log('parent:' + parent + ' child length is ' + childLen)
+    for (let i = childLen - 1; i >= 0 ; i--) {
       let node = child[i]
       if (node.children.length) {
+        let parentNode = node.parentNode ? node.parentNode : parent
         this.constructor(node, false, this.sjf)
-        // node.parentElement.removeChild(node)
+        this.sjf._uncompileNodes.push({check: node, search: node, parent: parentNode})
       } else {
-
+        this.sjf._uncompileNodes.push({check: node, search: node, parent: node.parentNode})
+        node.parentNode.removeChild(node)
       }
     }
 
-    // Array.prototype.forEach.call(child, node => {
-    //   if (!!node.children.length) {
-    //     this.constructor(node, false, this.sjf)
-    //   } else {
-    //     this.sjf._uncompileNodes.push(node)
-    //     this.sjf._uncompileNodes.forEach(value => {
-    //       this.hasDirective(value)
-    //     })
-    //     this.sjf._uncompileNodes = []
-    //   }
-    // })
+    this.sjf._el.innerHTML = rootContent
+
     // 如果当前节点是这个Sjf实例的根节点的最后一个子节点就跳出递归
-    if (this.sjf._el.lastElementChild === child[child.length - 1]) {
-      new link(this.sjf)
+    if (this.sjf._el.lastElementChild === child[childLen - 1]) {
+      this.compileNode()
     }
   }
 
+  compileNode () {
+    console.log(this.sjf._uncompileNodes)
+    let hasUncompile = this.sjf._uncompileNodes.length
+    if (hasUncompile) {
+      this.sjf._uncompileNodes.forEach(value => {
+        this.hasDirective(value)
+      })
+    }
+    // new link(this.sjf)
+  }
+
   // 检测每个node看是否绑定有指令
-  hasDirective (node) {
+  hasDirective (value) {
     let checkReg = /sjf-.+=\".+\"|\{\{.+\}\}/
-    if (checkReg.test(node.outerHTML || node.innerText)) {
-      this.sjf._unlinkNodes.push(node)
+    console.log(value.search.outerHTML)
+    if (checkReg.test(value.check.outerHTML)) {
+      this.sjf._unlinkNodes.push(value)
     }
   }
 }

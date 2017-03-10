@@ -94,7 +94,7 @@ gulp.task('eslint', function () {
 
 // clean tasks
 gulp.task('clean', function (callback) {
-  plugins.del(['./build/js', 'build/css'], callback)
+  plugins.del(['./build/js', './build/css'], callback)
 });
 
 gulp.task('default', ['serve'])

@@ -5,10 +5,12 @@ class link {
   constructor (sjf) {
     this.sjf = sjf
     let hasUnlinkNode = this.sjf._unlinkNodes.length
+    console.log(this.sjf._unlinkNodes)
     if (hasUnlinkNode) {
       let extractReg = /sjf-[a-z]+=\"[^"]+\"|\{\{.+\}\}/g
       this.sjf._unlinkNodes.forEach((value) => {
-        let directives = (value.outerHTML).match(extractReg)
+        let directives = (value.node.outerHTML).match(extractReg)
+        console.log(directives)
         directives.forEach(val => {
           this.extractDirective(val, value)
         })
