@@ -1,35 +1,75 @@
  import link from './link'
+ import util from './utils'
 
  class compile {
   // 递归DOM树
-  constructor (parent, isFirst, sjf) {
+  constructor (parent, lastNode, isFirst, sjf) {
+    let rootContent
     this.sjf = sjf
-    let child = parent.children
-    let childLen = child.length
-    let rootContent = parent.innerHTML
-    // 如果是第一次遍历并且没有子节点就直接跳过compile
-    if (isFirst && !childLen) {
-      this.compileNode()
-    }
-    // console.log('parent:' + parent + ' child length is ' + childLen)
-    for (let i = childLen - 1; i >= 0 ; i--) {
-      let node = child[i]
-      if (node.children.length) {
-        let parentNode = node.parentNode ? node.parentNode : parent
-        this.constructor(node, false, this.sjf)
-        this.sjf._uncompileNodes.push({check: node, search: node, parent: parentNode})
-      } else {
-        this.sjf._uncompileNodes.push({check: node, search: node, parent: node.parentNode})
-        node.parentNode.removeChild(node)
+    this.searchNode = []
+    if (isFirst) {
+      rootContent = sjf._el.innerHTML
+      if (!parent.children) {
+        this.compileNode()
+        return
+      }
+    } else {
+      parent.removeChild(lastNode)
+      if (parent === sjf._el) {
+        if (!parent.children.length) {
+          this.compileNode()
+          return
+        }
       }
     }
-
-    this.sjf._el.innerHTML = rootContent
-
-    // 如果当前节点是这个Sjf实例的根节点的最后一个子节点就跳出递归
-    if (this.sjf._el.lastElementChild === child[childLen - 1]) {
-      this.compileNode()
+    
+    let child = parent.children
+    let childLen = child.length
+    if (childLen) {
+      for (var i = 0; i < childLen; i++) {
+        let node = child[i]
+        if (node.children.length) {
+          var searchNode = this.searchLoneChild(node)[0]
+          this.sjf._uncompileNodes.push({
+            check: searchNode, 
+            search: searchNode, 
+            parent: searchNode.parentNode
+          })
+          this.searchNode = []
+          this.constructor(searchNode.parentNode, searchNode, false, this.sjf)
+        } else {
+          this.sjf._uncompileNodes.push({
+            check: node, 
+            search: node, 
+            parent: node.parentNode
+          })
+          if (i === childLen - 1) {
+            this.constructor(node.parentNode, node, false, this.sjf)
+          }
+        }
+      }
+    } else {
+      this.sjf._uncompileNodes.push({
+        check: parent, 
+        search: parent, 
+        parent: parent.parentNode
+      })
+      this.constructor(parent.parentNode, parent, false, this.sjf)
     }
+
+  }
+
+  searchLoneChild (node) {
+    let childLen = node.children.length
+    if (childLen) {
+      for (var i = 0; i < childLen; i++) {
+        if (node.children[i].children.length) {
+          this.searchLoneChild(node.children[i])
+        }
+      }
+      this.searchNode.push(node.children[childLen - 1])
+    }
+    return this.searchNode
   }
 
   compileNode () {
@@ -46,7 +86,6 @@
   // 检测每个node看是否绑定有指令
   hasDirective (value) {
     let checkReg = /sjf-.+=\".+\"|\{\{.+\}\}/
-    console.log(value.search.outerHTML)
     if (checkReg.test(value.check.outerHTML)) {
       this.sjf._unlinkNodes.push(value)
     }

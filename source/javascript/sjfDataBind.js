@@ -18,7 +18,7 @@ class SjfDataBind {
         this['_' + method] = param.methods[method].bind(this)
       }
     }
-    new compile(this._el, true, this)
+    new compile(this._el, null, true, this)
   }
 }
 

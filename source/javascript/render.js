@@ -24,7 +24,7 @@ const linkRender = {
     let isArray = util.judgeType(toLoopObject) === '[object Array]'
     let len = isArray ? toLoopObject.length : toLoopObject
 
-    value.node.removeAttribute('sjf-for')
+    // value.search.removeAttribute('sjf-for')
     for (let i = 0; i < len - 1; i++) {
       let clonedNode = value.node.cloneNode(true)
       value.node.parentElement.insertBefore(clonedNode, value.node)

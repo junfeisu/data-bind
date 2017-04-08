@@ -20,6 +20,30 @@ const util = {
       let val2 = option.priority[obj2[property]]
       return val2 - val1
     })
+  },
+  isArray (arr) {
+    return util.judgeType(arr) === '[object Array]'
+  },
+  isStaictObject (obj) {
+    return util.judgeType(obj) === '[object Object]'
+  },
+  deepCopy (source, dest) {
+    if (!util.isArray(source) && !util.isStaictObject(source)) {
+      throw 'the source you support can not be copied'
+    }
+
+    var copySource = util.isArray(source) ? [] : {}
+    for (var prop in source) {
+      if (source.hasOwnProperty(prop)) {
+        if (util.isArray(source[prop]) || util.isStaictObject(source[prop])) {
+          copySource[prop] = util.deepCopy(source[prop])
+        } else {
+          copySource[prop] = source[prop]
+        }
+      }
+    }
+
+    return copySource
   }
 }
 

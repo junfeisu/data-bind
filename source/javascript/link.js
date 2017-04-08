@@ -9,7 +9,7 @@ class link {
     if (hasUnlinkNode) {
       let extractReg = /sjf-[a-z]+=\"[^"]+\"|\{\{.+\}\}/g
       this.sjf._unlinkNodes.forEach((value) => {
-        let directives = (value.node.outerHTML).match(extractReg)
+        let directives = (value.check.outerHTML).match(extractReg)
         console.log(directives)
         directives.forEach(val => {
           this.extractDirective(val, value)
