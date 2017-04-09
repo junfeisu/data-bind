@@ -88,7 +88,7 @@
         this.hasDirective(value)
       })
     }
-    // new link(this.sjf)
+    new link(this.sjf)
   }
 
   // 检测每个node看是否绑定有指令
