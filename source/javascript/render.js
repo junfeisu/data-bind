@@ -21,21 +21,23 @@ const linkRender = {
       return 
     }
     // 判断是数组还是数字，从而赋值length
-    let isArray = util.judgeType(toLoopObject) === '[object Array]'
+    let isArray = util.isArray(toLoopObject)
     let len = isArray ? toLoopObject.length : toLoopObject
 
     // value.search.removeAttribute('sjf-for')
-    for (let i = 0; i < len - 1; i++) {
-      let clonedNode = value.node.cloneNode(true)
-      value.node.parentElement.insertBefore(clonedNode, value.node)
-    }
+    console.log(value.node.parentNode)
+    console.log(value.node.check.parentNode === value.node.parent)
+    // for (let i = 0; i < len; i++) {
+    //   let clonedNode = value.node.check.cloneNode(true)
+    //   console.log(value.node.parent)
+    //   value.node.parent.appendChild(clonedNode)
+    // }
 
     if (toLoopObject && isArray) {
       this._watchers.push(toLoopObject)
     }
   },
   'sjf-text': function (value) {
-    console.log(value)
     value.node.innerText = this._data[value.expression]
   }
 }
@@ -45,12 +47,13 @@ class render {
     this.sjf = sjf
     this.unBindEvents = []
     this.unSortDirectives = []
+    console.log(this.sjf._unrenderNodes)
     let hasRender = this.sjf._unrenderNodes.length
     if (hasRender) {
       this.sjf._unrenderNodes.forEach(val => {
         val.type === 'event' ? this.unBindEvents.push(val) : this.unSortDirectives.push(val)
-      })
       this.sjf._unrenderNodes = []
+      })
     }
     this.sortDirective()
   }
@@ -70,10 +73,10 @@ class render {
     let eventQuene = this.unBindEvents
     if (eventQuene.length) {
       eventQuene.forEach(val => {
-        val.target.removeAttribute(val.name)
+        val.target.search.removeAttribute(val.name)
         let eventType = util.removePrefix(val.name)
         let eventFunc = this.sjf['_' + util.removeBrackets(val.func)]
-        val.target.addEventListener(eventType, eventFunc, false)
+        val.target.check.addEventListener(eventType, eventFunc, false)
       })
     }
   }

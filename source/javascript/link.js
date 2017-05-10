@@ -13,7 +13,6 @@ class link {
           this.extractDirective(val, value)
         })
       })
-      console.log(this.sjf._unrenderNodes)
       this._unlinkNodes = []
       new render(this.sjf)
     }

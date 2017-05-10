@@ -20,7 +20,6 @@
       parent.removeChild(lastNode)
       if (parent === this.sjf._el) {
         if (!parent.children.length) {
-          console.log(parent)
           return
         }
       }
@@ -47,14 +46,14 @@
             parent: searchNode.parentNode
           })
           this.searchNode = []
-          this.traverseElement(searchNode.parentNode, searchNode, false, this.sjf)
+          this.traverseElement(searchNode.parentNode, searchNode, false)
         } else {
           this.sjf._uncompileNodes.push({
             check: node, 
             search: node, 
             parent: node.parentNode
           })
-          this.traverseElement(node.parentNode, node, false, this.sjf)
+          this.traverseElement(node.parentNode, node, false)
         }
       }
     } else {
@@ -63,7 +62,7 @@
         search: parent, 
         parent: parent.parentNode
       })
-      this.traverseElement(parent.parentNode, parent, false, this.sjf)
+      this.traverseElement(parent.parentNode, parent, false)
     }
   }
 
@@ -81,20 +80,20 @@
   }
 
   compileNode () {
-    this.sjf._el.innerHTML = this.rootContent
+    // this.sjf._el.innerHTML = this.rootContent
     let hasUncompile = this.sjf._uncompileNodes.length
     if (hasUncompile) {
       this.sjf._uncompileNodes.forEach(value => {
         this.hasDirective(value)
       })
     }
+    console.log(this.sjf._uncompileNodes)
     new link(this.sjf)
   }
 
   // 检测每个node看是否绑定有指令
   hasDirective (value) {
     let checkReg = /sjf-.+=\".+\"|\{\{.+\}\}/
-    console.log(value.check.outerHTML)
     if (checkReg.test(value.check.outerHTML)) {
       this.sjf._unlinkNodes.push(value)
     }
