@@ -7,10 +7,15 @@ class link {
     let hasUnlinkNode = this.sjf._unlinkNodes.length
     if (hasUnlinkNode) {
       let extractReg = /sjf-[a-z]+=\"[^"]+\"|\{\{.+\}\}/g
-      this.sjf._unlinkNodes.forEach((value) => {
-        let directives = (value.check.outerHTML).match(extractReg)
-        directives.forEach(val => {
-          this.extractDirective(val, value)
+      this.sjf._unlinkNodes.map((value) => {
+        let directives = []
+        if (value.nodeType === 'textNode') {
+          directives = value.check.data.match(extractReg)
+        } else {
+          directives = value.check.cloneNode().outerHTML.match(extractReg)
+        }
+        directives.map(directive => {
+          this.extractDirective(directive, value)
         })
       })
       this._unlinkNodes = []
