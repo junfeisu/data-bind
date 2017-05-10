@@ -4,9 +4,9 @@ var test = new SjfDataBind.default({
     lists: ['test', 'hhh']
   },
   methods: {
-    add: function () {
+    add: function (list) {
       console.log(this)
-      this._data.lists.push('jjj is a sb')
+      this._data.lists.push(list)
     }
   }
 })

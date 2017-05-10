@@ -1,5 +1,6 @@
 import option from './option'
 import render from './render'
+import util from './utils'
 
 class link {
   constructor (sjf) {
@@ -7,19 +8,43 @@ class link {
     let hasUnlinkNode = this.sjf._unlinkNodes.length
     if (hasUnlinkNode) {
       let extractReg = /sjf-[a-z]+=\"[^"]+\"|\{\{.+\}\}/g
-      this.sjf._unlinkNodes.map((value) => {
+      this.sjf._unlinkNodes.map(value => {
         let directives = []
         if (value.nodeType === 'textNode') {
           directives = value.check.data.match(extractReg)
         } else {
           directives = value.check.cloneNode().outerHTML.match(extractReg)
         }
-        directives.map(directive => {
-          this.extractDirective(directive, value)
-        })
+        console.log(directives)
+        if (directives.length > 1) {
+          let withNameDirectives = directives.map(directive => this.addDirectiveName(directive))
+          withNameDirectives = util.sortExexuteQueue('name', withNameDirectives)
+          withNameDirectives.map(directive => {
+            this.extractDirective(directive.value, value)
+          })
+        } else {
+          directives.map(directive => {
+            this.extractDirective(directive, value)
+          })
+        }
       })
       this._unlinkNodes = []
       new render(this.sjf)
+    }
+  }
+
+  addDirectiveName (directive) {
+    let slices = directive.split('=')
+    if (slices.length === 0) {
+      return {
+        name: 'sjf-text',
+        value: directive
+      }
+    } else {
+      return {
+        name: slices[0],
+        value: directive
+      }
     }
   }
 

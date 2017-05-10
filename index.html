@@ -9,8 +9,8 @@
 </head>
 <body>
   <div id="test">
-    <div class="test" sjf-for="list in lists">
-      {{list}}<p class="outer">
+    <div class="test" sjf-text="list" sjf-for="list in lists" sjf-click="add(list)">
+      <p class="outer">
         {{list}}
         <span class="inner">123</span>
       </p>

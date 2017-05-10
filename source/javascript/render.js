@@ -24,7 +24,7 @@ const linkRender = {
     let isArray = util.isArray(toLoopObject)
     let len = isArray ? toLoopObject.length : toLoopObject
     value.node.check.removeAttribute('sjf-for')
-    for (let i = 1; i < len; i++) {
+    for (let i = 0; i < len - 1; i++) {
       let clonedNode = value.node.check.cloneNode(true)
       value.node.parent.insertBefore(clonedNode, value.node.check)
     }
@@ -34,9 +34,12 @@ const linkRender = {
     }
   },
   'sjf-text': function (value) {
-    console.log(value)
-    value.node.innerText = this._data[value.expression]
+    // value.node.check = this._data[value.expression]
   }
+}
+
+const searchParent = (root, node) => {
+  root = root || document
 }
 
 class render {
@@ -44,20 +47,21 @@ class render {
     this.sjf = sjf
     this.unBindEvents = []
     this.unSortDirectives = []
+    console.log(this.sjf._unrenderNodes)
     let hasRender = this.sjf._unrenderNodes.length
     if (hasRender) {
       this.sjf._unrenderNodes.map(val => {
         val.type === 'event' ? this.unBindEvents.push(val) : this.unSortDirectives.push(val)
-      this.sjf._unrenderNodes = []
       })
+      this.sjf._unrenderNodes = []
     }
     this.sortDirective()
   }
 
   sortDirective () {
-    let executeQueue = util.sortExexuteQueue('directive', this.unSortDirectives)
-    if (executeQueue.length) {
-      executeQueue.forEach(value => {
+    let hasUnSortDirective = this.unSortDirectives.length
+    if (this.unSortDirectives.length) {
+      this.unSortDirectives.map(value => {
         linkRender[value.directive].bind(this.sjf)(value)
       })
     }
@@ -71,6 +75,7 @@ class render {
       eventQuene.map(val => {
         val.target.check.removeAttribute(val.name)
         let eventType = util.removePrefix(val.name)
+        console.log(val.func)
         let eventFunc = this.sjf['_' + util.removeBrackets(val.func)]
         if (eventFunc) {
           val.target.check.addEventListener(eventType, eventFunc, false)
@@ -79,6 +84,10 @@ class render {
         }
       })
     }
+  }
+
+  searchParent () {
+
   }
 }
 
