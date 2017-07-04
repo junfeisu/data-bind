@@ -24,12 +24,17 @@ const linkRender = {
     // 判断是数组还是数字，从而赋值length
     let isArray = util.isArray(toLoopObject)
     let len = isArray ? toLoopObject.length : toLoopObject
+    let clonedCheckNode = value.node.check.cloneNode(true)
+    let clonedCheckNodeLength = clonedCheckNode.childNodes.length
     value.node.check.removeAttribute('sjf-for')
 
     for (let i = 0; i < len; i++) {
       value.beforeDirectives.map(directive => {
         if (directive.expression === representativeName) {
-          linkRender[directive.directive].bind(this)(directive, toLoopObject[i], representativeName)
+          directive['textNodeValue'] = toLoopObject[i]
+          directive['representativeName'] = representativeName
+          directive['checkNodeChildLength'] = clonedCheckNodeLength
+          linkRender[directive.directive].bind(this)(directive)
         }
       })
       let clonedNode = value.node.check.cloneNode(true)
@@ -41,17 +46,21 @@ const linkRender = {
       this._watchers.push(toLoopObject)
     }
   },
-  'sjf-text': function (value, textValue, representativeName) {
-    let textNodeVlaue = !textValue ? this._data[value.expression] : textValue
+  'sjf-text': function (value) {
+    console.log(value)
+    let textNodeVlaue = !value.textNodeValue ? this._data[value.expression] : value.textNodeValue
     let checkNode = value.node.check
 
     if (value.node.nodeType === 'elementNode') {
       let textNode = document.createTextNode(textNodeVlaue)
       let hasChild = checkNode.childNodes.length
 
+      if (checkNode.childNodes.length == value.checkNodeChildLength + 1) {
+        checkNode.removeChild(checkNode.firstChild)
+      }
       hasChild ? checkNode.insertBefore(textNode, checkNode.firstChild) : checkNode.appendChild(textNode)
     } else {
-      checkNode.data = checkNode.data.replace('{{' + representativeName + '}}', textNodeVlaue)
+      checkNode.data = textNodeVlaue
     }
   }
 }
