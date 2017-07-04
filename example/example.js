@@ -1,7 +1,8 @@
 var test = new SjfDataBind.default({
   el: '#test',
   data: {
-    lists: ['test', 'hhh']
+    lists: ['test', 'hhh'],
+    showName: false
   },
   methods: {
     add: function (list) {
