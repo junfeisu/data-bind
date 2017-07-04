@@ -10,7 +10,8 @@ var babelify = require('babelify')
 // server处理
 gulp.task('serve', ['scripts'], function () {
   browserSync.init({
-    server: "./"
+    server: "./",
+    port: 5000
   })
 
   gulp.watch('source/style/*.scss', ['styles']);
