@@ -24,38 +24,45 @@ const linkRender = {
     // 判断是数组还是数字，从而赋值length
     let isArray = util.isArray(toLoopObject)
     let len = isArray ? toLoopObject.length : toLoopObject
-    let clonedNode = value.node.check.cloneNode(true)
     value.node.check.removeAttribute('sjf-for')
 
-    for (let i = 0; i < len - 1; i++) {
+    for (let i = 0; i < len; i++) {
       value.beforeDirectives.map(directive => {
         if (directive.expression === representativeName) {
-          linkRender[directive.directive].bind(this)(directive, toLoopObject[i])
+          linkRender[directive.directive].bind(this)(directive, toLoopObject[i], representativeName)
         }
       })
+      let clonedNode = value.node.check.cloneNode(true)
       value.node.parent.insertBefore(clonedNode, value.node.check)
     }
+    value.node.parent.removeChild(value.node.check)
 
     if (toLoopObject && isArray) {
       this._watchers.push(toLoopObject)
     }
   },
-  'sjf-text': function (value, textValue) {
+  'sjf-text': function (value, textValue, representativeName) {
     let textNodeVlaue = !textValue ? this._data[value.expression] : textValue
-    console.log('checkNode', value.node.check)
+    let checkNode = value.node.check
+
     if (value.node.nodeType === 'elementNode') {
-      value.node.check.innerText = textNodeVlaue
+      let textNode = document.createTextNode(textNodeVlaue)
+      let hasChild = checkNode.childNodes.length
+
+      hasChild ? checkNode.insertBefore(textNode, checkNode.firstChild) : checkNode.appendChild(textNode)
     } else {
-      value.node.check = textNodeVlaue
+      checkNode.data = checkNode.data.replace('{{' + representativeName + '}}', textNodeVlaue)
     }
   }
 }
 
 class render {
   constructor (sjf) {
+
     this.sjf = sjf
     this.unBindEvents = []
     this.unSortDirectives = []
+
     let hasRender = this.sjf._unrenderNodes.length
     if (hasRender) {
       this.sjf._unrenderNodes.map(val => {
@@ -63,6 +70,7 @@ class render {
       })
       this.sjf._unrenderNodes = []
     }
+
     this.sortDirective()
   }
 
@@ -73,6 +81,7 @@ class render {
         if (this.unSortDirectives[i].directive === 'sjf-for') {
           let sjfArr = Object.assign([], this.unSortDirectives)
           let beforeForDirectives = util.searchChild(sjfArr.splice(i + 1), this.unSortDirectives[i].node.check)
+
           this.unSortDirectives[i]['beforeDirectives'] = beforeForDirectives
           this.unSortDirectives.splice(i + 1, beforeForDirectives.length)
         }
