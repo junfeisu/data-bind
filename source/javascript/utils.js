@@ -44,6 +44,18 @@ const util = {
     }
 
     return copySource
+  },
+  searchChild (arr, parent) {
+    if (util.isArray(arr)) {
+      arr.map(value => {
+        return parent.contains(value.node.check)
+      })
+
+      return arr
+    } else {
+      console.error('sjf[error]: the arr in searchChild ' + arr + ' is not Array')
+      return
+    }
   }
 }
 

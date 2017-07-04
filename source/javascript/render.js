@@ -10,6 +10,7 @@ const linkRender = {
   'sjf-for': function (value) {
     // 将表达式通过空格(不限空格数目)给切开
     let loopObjectName = value.expression.split(/\s+/)[2]
+    let representativeName = value.expression.split(/\s+/)[0]
     let toLoopObject = null
     if (this._data.hasOwnProperty(loopObjectName)) {
       toLoopObject = this._data[loopObjectName]
@@ -23,9 +24,15 @@ const linkRender = {
     // 判断是数组还是数字，从而赋值length
     let isArray = util.isArray(toLoopObject)
     let len = isArray ? toLoopObject.length : toLoopObject
+    let clonedNode = value.node.check.cloneNode(true)
     value.node.check.removeAttribute('sjf-for')
+
     for (let i = 0; i < len - 1; i++) {
-      let clonedNode = value.node.check.cloneNode(true)
+      value.beforeDirectives.map(directive => {
+        if (directive.expression === representativeName) {
+          linkRender[directive.directive].bind(this)(directive, toLoopObject[i])
+        }
+      })
       value.node.parent.insertBefore(clonedNode, value.node.check)
     }
 
@@ -33,13 +40,15 @@ const linkRender = {
       this._watchers.push(toLoopObject)
     }
   },
-  'sjf-text': function (value) {
-    // value.node.check = this._data[value.expression]
+  'sjf-text': function (value, textValue) {
+    let textNodeVlaue = !textValue ? this._data[value.expression] : textValue
+    console.log('checkNode', value.node.check)
+    if (value.node.nodeType === 'elementNode') {
+      value.node.check.innerText = textNodeVlaue
+    } else {
+      value.node.check = textNodeVlaue
+    }
   }
-}
-
-const searchParent = (root, node) => {
-  root = root || document
 }
 
 class render {
@@ -47,7 +56,6 @@ class render {
     this.sjf = sjf
     this.unBindEvents = []
     this.unSortDirectives = []
-    console.log(this.sjf._unrenderNodes)
     let hasRender = this.sjf._unrenderNodes.length
     if (hasRender) {
       this.sjf._unrenderNodes.map(val => {
@@ -60,12 +68,21 @@ class render {
 
   sortDirective () {
     let hasUnSortDirective = this.unSortDirectives.length
-    if (this.unSortDirectives.length) {
+    if (hasUnSortDirective) {
+      for (let i = hasUnSortDirective - 1; i >= 0; i--) {
+        if (this.unSortDirectives[i].directive === 'sjf-for') {
+          let sjfArr = Object.assign([], this.unSortDirectives)
+          let beforeForDirectives = util.searchChild(sjfArr.splice(i + 1), this.unSortDirectives[i].node.check)
+          this.unSortDirectives[i]['beforeDirectives'] = beforeForDirectives
+          this.unSortDirectives.splice(i + 1, beforeForDirectives.length)
+        }
+      }
+
       this.unSortDirectives.map(value => {
         linkRender[value.directive].bind(this.sjf)(value)
       })
     }
-    this.bindEvent()
+    // this.bindEvent()
   }
 
   // 绑定事件
@@ -73,10 +90,12 @@ class render {
     let eventQuene = this.unBindEvents
     if (eventQuene.length) {
       eventQuene.map(val => {
+        console.log('val', val)
         val.target.check.removeAttribute(val.name)
         let eventType = util.removePrefix(val.name)
         console.log(val.func)
         let eventFunc = this.sjf['_' + util.removeBrackets(val.func)]
+        console.log(eventFunc.arguments)
         if (eventFunc) {
           val.target.check.addEventListener(eventType, eventFunc, false)
         } else {
@@ -84,10 +103,6 @@ class render {
         }
       })
     }
-  }
-
-  searchParent () {
-
   }
 }
 

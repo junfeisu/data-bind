@@ -7,6 +7,9 @@ var test = new SjfDataBind.default({
     add: function (list) {
       console.log(this)
       this._data.lists.push(list)
+    },
+    cancel: function () {
+      console.log('cancel')
     }
   }
 })

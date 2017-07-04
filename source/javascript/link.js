@@ -15,7 +15,6 @@ class link {
         } else {
           directives = value.check.cloneNode().outerHTML.match(extractReg)
         }
-        console.log(directives)
         if (directives.length > 1) {
           let withNameDirectives = directives.map(directive => this.addDirectiveName(directive))
           withNameDirectives = util.sortExexuteQueue('name', withNameDirectives)
