@@ -5,7 +5,9 @@ const directiveDeal = {
     value.node.style.display = (!!(value.expression) ? 'block!important' : 'none!important')
   },
   'sjf-show': function (value) {
-    value.node.style.display = (!!(value.expression) ? 'block!important' : 'none!important')
+    let displayValue = this._data[value.expression] ? 'block' : 'none'
+    // value.node.check.style.display = 
+    value.node.check.style.setProperty('display', displayValue, 'important')
   },
   'sjf-for': function (value) {
     // 将表达式通过空格(不限空格数目)给切开
