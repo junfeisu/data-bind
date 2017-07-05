@@ -1,5 +1,23 @@
 import util from './utils'
 
+const specialDeals = {
+  parseArg (args, loopInfo) {
+    args.map(arg => {
+      if (arg === loopInfo.representativeName) {
+        return loopInfo.currentVal
+      } else if (/^'.*'$|^".*"$/.test(arg)) {
+        return arg
+      } else if (this._data.hasOwnProperty(arg)) {
+        return this._data[arg]
+      } else {
+        console.error('sjf[error]: the argument ' + arg + ' is unValid')
+      }
+    })
+
+    return args
+  }
+}
+
 const directiveDeal = {
   'sjf-if': function (value) {
     value.node.style.display = (!!(value.expression) ? 'block!important' : 'none!important')
@@ -51,26 +69,17 @@ const directiveDeal = {
         let funcArgs = util.extractFuncArg(funcString)
         let funcType = util.removePrefix(event.name)
         let func = this['_' + funcName]
-        
-        funcArgs.map(arg => {
-          if (arg === representativeName) {
-            return toLoopObject[i]
-          } else if (/^'.*'$|^".*"$/.test(arg)) {
-            return arg
-          } else if (this._data.hasOwnProperty(arg)) {
-            return this._data[arg]
-          } else {
-            console.error('sjf[error]: the argument ' + arg + ' is unValid')
-          }
-        })
-
-        if (func) {
-          event.node.check.addEventListener(funcType, function () {
-            this['_' + funcName].apply(this, funcArgs)
-          }, false)
-        } else {
-          console.error('sjf[error]: the ' + funcName + ' is not declared')
+        let argInfo = {
+          representativeName: representativeName,
+          currentVal: toLoopObject[i]
         }
+        let bindFn = () => {
+          this['_' + funcName].apply(this, funcArgs)
+        }
+
+        specialDeals.parseArg.bind(this, funcArgs, argInfo)
+        func ? event.node.check.addEventListener(funcType, bindFn, false) :
+          console.error('sjf[error]: the ' + funcName + ' is not declared')
       })
 
       let clonedNode = value.node.check.cloneNode(true)
