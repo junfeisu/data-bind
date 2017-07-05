@@ -59,6 +59,15 @@ const util = {
       console.error('sjf[error]: the arr in searchChild ' + arr + ' is not Array')
       return
     }
+  },
+  directiveSortFilter (ahead, after) {
+    let aheadPriority = option[ahead.directive]
+    let afterPriority = option[after.directive]
+
+    return val2 - val1
+  },
+  sortArr (arr, sortFilter) {
+    return arr.sort(sortFilter)
   }
 }
 

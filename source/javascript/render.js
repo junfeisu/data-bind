@@ -19,15 +19,20 @@ class render {
   }
 
   sortDirective () {
-    let hasUnSortDirective = this.unSortDirectives.length
-    if (hasUnSortDirective) {
-      for (let i = hasUnSortDirective - 1; i >= 0; i--) {
+    let unSortDirectiveLen = this.unSortDirectives.length
+    if (unSortDirectiveLen) {
+      for (let i = unSortDirectiveLen - 1; i >= 0; i--) {
         if (this.unSortDirectives[i].directive === 'sjf-for') {
-          let sjfArr = Object.assign([], this.unSortDirectives)
-          let beforeForDirectives = util.searchChild(sjfArr.splice(i + 1), this.unSortDirectives[i].node.check)
+          let copyDirectives = Object.assign([], this.unSortDirectives)
+          let copyEvents = Object.assign([], this.unBindEvents)
+          let beforeForDirectives = util.searchChild(copyDirectives.splice(i + 1), this.unSortDirectives[i].node.check)
+          let beforeForEvents = util.searchChild(copyEvents, this.unSortDirectives[i].node.check)
 
           this.unSortDirectives[i]['beforeDirectives'] = beforeForDirectives
           this.unSortDirectives.splice(i + 1, beforeForDirectives.length)
+
+          this.unBindEvents[i]['beforeForEvents'] = beforeForEvents
+          this.unBindEvents.splice(copyEvents.indexOf(beforeForEvents[0]), beforeForEvents.length)
         }
       }
 
