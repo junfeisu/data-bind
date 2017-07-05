@@ -79,6 +79,21 @@ const util = {
   },
   sortArr (arr, sortFilter) {
     return arr.sort(sortFilter)
+  },
+  parseArg (args, loopInfo) {
+    args.map(arg => {
+      if (arg === loopInfo.representativeName) {
+        return loopInfo.currentVal
+      } else if (/^'.*'$|^".*"$/.test(arg)) {
+        return arg
+      } else if (this._data.hasOwnProperty(arg)) {
+        return this._data[arg]
+      } else {
+        console.error('sjf[error]: the argument ' + arg + ' is unValid')
+      }
+    })
+
+    return args
   }
 }
 

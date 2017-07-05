@@ -20,6 +20,7 @@ class render {
 
   sortDirective () {
     let unSortDirectiveLen = this.unSortDirectives.length
+    
     if (unSortDirectiveLen) {
       for (let i = unSortDirectiveLen - 1; i >= 0; i--) {
         if (this.unSortDirectives[i].directive === 'sjf-for') {
@@ -40,23 +41,28 @@ class render {
         directiveDeal[value.directive].bind(this.sjf)(value)
       })
     }
-    
+
     this.bindEvent()
   }
 
   // 绑定事件
   bindEvent () {
-    let eventQuene = this.unBindEvents
-    if (eventQuene.length) {
-      eventQuene.map(val => {
-        let checkNode = val.node.check
-        let eventType = util.removePrefix(val.name)
-        let eventFunc = this.sjf['_' + util.removeBrackets(val.func)]
-        checkNode.removeAttribute(val.name)
+    this.unBindEvents.map(val => {
+      let checkNode = val.node.check
+      let funcString = util.removeBrackets(val.func)
+      let funcName = util.extractFuncName(funcString)
+      let funcArgs = util.extractFuncArg(funcString)
+      let funcType = util.removePrefix(val.name)
+      let func = this.sjf['_' + funcName]
 
-        eventFunc ? checkNode.addEventListener(eventType, eventFunc, false) : console.error('sjf[error]: the ' + val.func + ' is not declared')
-      })
-    }
+      util.parseArg.bind(this.sjf, funcArgs)
+      let bindFn = () => {
+        func.apply(this.sjf, funcArgs)
+      }
+
+      checkNode.removeAttribute(val.name)
+      func ? checkNode.addEventListener(funcType, bindFn, false) : console.error('sjf[error]: the ' + val.func + ' is not declared')
+    })
   }
 }
 

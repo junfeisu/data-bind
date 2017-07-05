@@ -1,23 +1,5 @@
 import util from './utils'
 
-const specialDeals = {
-  parseArg (args, loopInfo) {
-    args.map(arg => {
-      if (arg === loopInfo.representativeName) {
-        return loopInfo.currentVal
-      } else if (/^'.*'$|^".*"$/.test(arg)) {
-        return arg
-      } else if (this._data.hasOwnProperty(arg)) {
-        return this._data[arg]
-      } else {
-        console.error('sjf[error]: the argument ' + arg + ' is unValid')
-      }
-    })
-
-    return args
-  }
-}
-
 const directiveDeal = {
   'sjf-if': function (value) {
     value.node.style.display = (!!(value.expression) ? 'block!important' : 'none!important')
@@ -73,11 +55,12 @@ const directiveDeal = {
           representativeName: representativeName,
           currentVal: toLoopObject[i]
         }
+        
+        util.parseArg.bind(this, funcArgs, argInfo)
         let bindFn = () => {
           this['_' + funcName].apply(this, funcArgs)
         }
 
-        specialDeals.parseArg.bind(this, funcArgs, argInfo)
         func ? event.node.check.addEventListener(funcType, bindFn, false) :
           console.error('sjf[error]: the ' + funcName + ' is not declared')
       })
