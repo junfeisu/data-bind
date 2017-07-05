@@ -14,6 +14,14 @@ const util = {
     str = str.replace(/\"/g, '')
     return str = str.replace(/\(\)/, '')
   },
+  extractFuncName (str) {
+    str = str.replace(/\([\w|,|\s]+\)/, '')
+    return str
+  },
+  extractFuncArg (str) {
+    str = str.replace(/\w+\(|\)/g, '')
+    return str
+  },
   sortExexuteQueue (property, objArr) {
     return objArr.sort((obj1, obj2) => {
       let val1 = option.priority[obj1[property]]

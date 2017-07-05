@@ -39,8 +39,15 @@ const directiveDeal = {
           directive['textNodeValue'] = toLoopObject[i]
           directive['representativeName'] = representativeName
           directive['checkNodeChildLength'] = clonedCheckNodeLength
-          directiveDeal[directive.directive].bind(this)(directive)
         }
+        directiveDeal[directive.directive].bind(this)(directive)
+      })
+      value.beforeEvents.map(event => {
+        let funcString = util.removeBrackets(event.func)
+        let funcName = util.extractFuncName(funcString)
+        let funcArg = util.extractFuncArg(funcString)
+        console.log('funcName', funcName)
+        console.log('funcArg', funcArg)
       })
       let clonedNode = value.node.check.cloneNode(true)
       value.node.parent.insertBefore(clonedNode, value.node.check)

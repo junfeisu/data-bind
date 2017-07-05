@@ -31,7 +31,7 @@ class render {
           this.unSortDirectives[i]['beforeDirectives'] = beforeForDirectives
           this.unSortDirectives.splice(i + 1, beforeForDirectives.length)
 
-          this.unBindEvents[i]['beforeForEvents'] = beforeForEvents
+          this.unSortDirectives[i]['beforeEvents'] = beforeForEvents
           this.unBindEvents.splice(copyEvents.indexOf(beforeForEvents[0]), beforeForEvents.length)
         }
       }
