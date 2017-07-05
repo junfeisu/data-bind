@@ -64,8 +64,8 @@ const util = {
   },
   // the filter to sort the directives
   directiveSortFilter (ahead, after) {
-    let aheadPriority = option[ahead.directive]
-    let afterPriority = option[after.directive]
+    let aheadPriority = option.priority[ahead.directive]
+    let afterPriority = option.priority[after.directive]
 
     return afterPriority - aheadPriority
   },
