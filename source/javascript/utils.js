@@ -64,7 +64,7 @@ const util = {
     let aheadPriority = option[ahead.directive]
     let afterPriority = option[after.directive]
 
-    return val2 - val1
+    return afterPriority - aheadPriority
   },
   sortArr (arr, sortFilter) {
     return arr.sort(sortFilter)

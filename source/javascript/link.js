@@ -54,7 +54,7 @@ class link {
     if (option.sjfEvents.indexOf(slices[0]) >= 0) {
       let eventMes = {
         type: 'event',
-        target: node,
+        node: node,
         name: slices[0],
         func: slices[1]
       }

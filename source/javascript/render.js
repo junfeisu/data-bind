@@ -48,7 +48,7 @@ class render {
     let eventQuene = this.unBindEvents
     if (eventQuene.length) {
       eventQuene.map(val => {
-        let checkNode = val.target.check
+        let checkNode = val.node.check
         let eventType = util.removePrefix(val.name)
         let eventFunc = this.sjf['_' + util.removeBrackets(val.func)]
         checkNode.removeAttribute(val.name)

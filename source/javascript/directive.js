@@ -28,7 +28,10 @@ const directiveDeal = {
     let len = isArray ? toLoopObject.length : toLoopObject
     let clonedCheckNode = value.node.check.cloneNode(true)
     let clonedCheckNodeLength = clonedCheckNode.childNodes.length
+
     value.node.check.removeAttribute('sjf-for')
+    // 对指令按照优先级进行排序
+    util.sortArr(value.beforeDirectives, util.directiveSortFilter)
 
     for (let i = 0; i < len; i++) {
       value.beforeDirectives.map(directive => {
