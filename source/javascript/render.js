@@ -40,7 +40,8 @@ class render {
         directiveDeal[value.directive].bind(this.sjf)(value)
       })
     }
-    // this.bindEvent()
+    
+    this.bindEvent()
   }
 
   // 绑定事件

@@ -47,11 +47,12 @@ const directiveDeal = {
       // bind the events
       value.beforeEvents.map(event => {
         let funcString = util.removeBrackets(event.func)
-        console.log(funcString)
         let funcName = util.extractFuncName(funcString)
-        let funcArg = util.extractFuncArg(funcString)
+        let funcArgs = util.extractFuncArg(funcString)
+        let funcType = util.removePrefix(event.name)
+        let func = this['_' + funcName]
         
-        funcArg.map(arg => {
+        funcArgs.map(arg => {
           if (arg === representativeName) {
             return toLoopObject[i]
           } else if (/^'.*'$|^".*"$/.test(arg)) {
@@ -63,12 +64,10 @@ const directiveDeal = {
           }
         })
 
-        console.log(this)
-        console.log(funcName)
-        let func = this['_' + funcName]
-
         if (func) {
-           func.apply(this, )
+          event.node.check.addEventListener(funcType, function () {
+            this['_' + funcName].apply(this, funcArgs)
+          }, false)
         } else {
           console.error('sjf[error]: the ' + funcName + ' is not declared')
         }
