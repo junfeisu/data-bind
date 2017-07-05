@@ -15,12 +15,12 @@ const util = {
     return str = str.replace(/\(\)/, '')
   },
   extractFuncName (str) {
-    str = str.replace(/\([\w|,|\s]+\)/, '')
+    str = str.replace(/\([\w|,|'|"|\s]+\)/, '')
     return str
   },
   extractFuncArg (str) {
     str = str.replace(/\w+\(|\)/g, '')
-    return str
+    return str.split(/,\s*/)
   },
   sortExexuteQueue (property, objArr) {
     return objArr.sort((obj1, obj2) => {

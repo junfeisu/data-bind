@@ -34,6 +34,7 @@ const directiveDeal = {
     util.sortArr(value.beforeDirectives, util.directiveSortFilter)
 
     for (let i = 0; i < len; i++) {
+      // execute the directives
       value.beforeDirectives.map(directive => {
         if (directive.expression === representativeName) {
           directive['textNodeValue'] = toLoopObject[i]
@@ -42,13 +43,37 @@ const directiveDeal = {
         }
         directiveDeal[directive.directive].bind(this)(directive)
       })
+
+      // bind the events
       value.beforeEvents.map(event => {
         let funcString = util.removeBrackets(event.func)
+        console.log(funcString)
         let funcName = util.extractFuncName(funcString)
         let funcArg = util.extractFuncArg(funcString)
-        console.log('funcName', funcName)
-        console.log('funcArg', funcArg)
+        
+        funcArg.map(arg => {
+          if (arg === representativeName) {
+            return toLoopObject[i]
+          } else if (/^'.*'$|^".*"$/.test(arg)) {
+            return arg
+          } else if (this._data.hasOwnProperty(arg)) {
+            return this._data[arg]
+          } else {
+            console.error('sjf[error]: the argument ' + arg + ' is unValid')
+          }
+        })
+
+        console.log(this)
+        console.log(funcName)
+        let func = this['_' + funcName]
+
+        if (func) {
+           func.apply(this, )
+        } else {
+          console.error('sjf[error]: the ' + funcName + ' is not declared')
+        }
       })
+
       let clonedNode = value.node.check.cloneNode(true)
       value.node.parent.insertBefore(clonedNode, value.node.check)
     }
