@@ -5,8 +5,27 @@ const directiveDeal = {
     value.node.style.display = (!!(value.expression) ? 'block!important' : 'none!important')
   },
   'sjf-show': function (value) {
-    let displayValue = this._data[value.expression] ? 'block' : 'none'
-    // value.node.check.style.display = 
+    let logicSymbolReg = /^!{1,2}/
+    let originalExpression = value.expression
+    let loginSymbol = ''
+    let showExpression = value.expression
+    if (logicSymbolReg.test(value.expression)) {
+      loginSymbol = value.expression.match(logicSymbolReg)[0]
+    }
+
+    if (loginSymbol) {
+      console.log('loginSymbol', loginSymbol)
+      let validExpression = originalExpression.replace(loginSymbol, '')
+      if (this._data.hasOwnProperty(validExpression)) {
+        showExpression = loginSymbol === '!' ? !this._data[validExpression] : !!this._data[validExpression]
+      }
+    }
+    
+    if (this._data.hasOwnProperty(originalExpression)) {
+      showExpression = this._data[originalExpression]
+    }
+
+    let displayValue = showExpression ? 'block' : 'none'
     value.node.check.style.setProperty('display', displayValue, 'important')
   },
   'sjf-for': function (value) {
