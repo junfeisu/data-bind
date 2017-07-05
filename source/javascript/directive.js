@@ -9,12 +9,12 @@ const directiveDeal = {
     let originalExpression = value.expression
     let loginSymbol = ''
     let showExpression = value.expression
+    // 判断是否有逻辑符号!或者!!
     if (logicSymbolReg.test(value.expression)) {
       loginSymbol = value.expression.match(logicSymbolReg)[0]
     }
-
+    // 有逻辑符号时要进行特殊处理
     if (loginSymbol) {
-      console.log('loginSymbol', loginSymbol)
       let validExpression = originalExpression.replace(loginSymbol, '')
       if (this._data.hasOwnProperty(validExpression)) {
         showExpression = loginSymbol === '!' ? !this._data[validExpression] : !!this._data[validExpression]
