@@ -2,7 +2,7 @@ import util from './utils'
 
 const directiveDeal = {
   'sjf-if': function (value) {
-    value.node.style.display = (!!(value.expression) ? 'block!important' : 'none!important')
+    value.node.style.display = value.expression ? 'block!important' : 'none!important')
   },
   'sjf-show': function (value) {
     let logicSymbolReg = /^!{1,2}/
