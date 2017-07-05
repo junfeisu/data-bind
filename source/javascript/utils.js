@@ -27,6 +27,7 @@ const util = {
   isStaictObject (obj) {
     return util.judgeType(obj) === '[object Object]'
   },
+  // deep copy of Object or Arr
   deepCopy (source, dest) {
     if (!util.isArray(source) && !util.isStaictObject(source)) {
       throw 'the source you support can not be copied'
@@ -45,6 +46,7 @@ const util = {
 
     return copySource
   },
+  // search the whole child Node of parent Node
   searchChild (arr, parent) {
     let resultArr = []
     if (util.isArray(arr)) {
@@ -60,6 +62,7 @@ const util = {
       return
     }
   },
+  // the filter to sort the directives
   directiveSortFilter (ahead, after) {
     let aheadPriority = option[ahead.directive]
     let afterPriority = option[after.directive]
