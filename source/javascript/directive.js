@@ -8,10 +8,10 @@ const directiveDeal = {
     let logicSymbolReg = /^!{1,2}/
     let originalExpression = value.expression
     let loginSymbol = ''
-    let showExpression = value.expression
+    let showExpression = originalExpression
     // 判断是否有逻辑符号!或者!!
-    if (logicSymbolReg.test(value.expression)) {
-      loginSymbol = value.expression.match(logicSymbolReg)[0]
+    if (logicSymbolReg.test(originalExpression)) {
+      loginSymbol = originalExpression.match(logicSymbolReg)[0]
     }
     // 有逻辑符号时要进行特殊处理
     if (loginSymbol) {
@@ -27,6 +27,7 @@ const directiveDeal = {
 
     let displayValue = showExpression ? 'block' : 'none'
     value.node.check.style.setProperty('display', displayValue, 'important')
+    value.node.check.removeAttribute('sjf-show')
   },
   'sjf-for': function (value) {
     // 将表达式通过空格(不限空格数目)给切开
@@ -104,6 +105,8 @@ const directiveDeal = {
 
       if (checkNode.childNodes.length == value.checkNodeChildLength + 1) {
         checkNode.removeChild(checkNode.firstChild)
+      } else {
+        checkNode.removeAttribute('sjf-text')
       }
       hasChild ? checkNode.insertBefore(textNode, checkNode.firstChild) : checkNode.appendChild(textNode)
     } else {
