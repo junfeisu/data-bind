@@ -10,7 +10,7 @@ const util = {
     return str = str.replace(/sjf-/, '')
   },
   // remove the brackets ()
-  removeBrackets (str) {
+  removeQuotations (str) {
     return str = str.replace(/\"/g, '')
   },
   removeSjfAttr (node) {

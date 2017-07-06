@@ -49,14 +49,13 @@ class render {
   bindEvent () {
     this.unBindEvents.map(val => {
       let checkNode = val.node.check
-      let funcString = util.removeBrackets(val.func)
+      let funcString = util.removeQuotations(val.func)
       let funcName = util.extractFuncName(funcString)
       let funcArgs = util.extractFuncArg(funcString)
       let funcType = util.removePrefix(val.name)
       let func = this.sjf['_' + funcName]
 
       funcArgs = util.parseArg.bind(this.sjf)(funcArgs)
-      console.log(funcArgs)
 
       let bindFn = () => {
         func.apply(this.sjf, funcArgs)

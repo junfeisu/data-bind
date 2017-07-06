@@ -65,7 +65,7 @@ const directiveDeal = {
 
       // bind the events
       value.beforeEvents.map(event => {
-        let funcString = util.removeBrackets(event.func)
+        let funcString = util.removeQuotations(event.func)
         let funcName = util.extractFuncName(funcString)
         let funcArgs = util.extractFuncArg(funcString)
         let funcType = util.removePrefix(event.name)
