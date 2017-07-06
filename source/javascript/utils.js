@@ -11,8 +11,7 @@ const util = {
   },
   // remove the brackets ()
   removeBrackets (str) {
-    str = str.replace(/\"/g, '')
-    return str = str.replace(/\(\)/, '')
+    return str = str.replace(/\"/g, '')
   },
   removeSjfAttr (node) {
     let attrs = Array.from(node.attributes)
@@ -31,12 +30,18 @@ const util = {
     return node
   },
   extractFuncName (str) {
-    str = str.replace(/\([\w|,|'|"|\s]+\)/, '')
+    str = str.replace(/\([\w,'"|\s]*\)/, '')
     return str
   },
   extractFuncArg (str) {
+    let args = []
+    // console.log('replaceBef', str)
     str = str.replace(/\w+\(|\)/g, '')
-    return str.split(/,\s*/)
+    // console.log(str)
+    if (str) {
+      args = str.split(/,\s*/)
+    } 
+    return args
   },
   sortExexuteQueue (property, objArr) {
     return objArr.sort((obj1, obj2) => {
@@ -97,8 +102,8 @@ const util = {
     return arr.sort(sortFilter)
   },
   parseArg (args, loopInfo) {
-    args.map(arg => {
-      if (arg === loopInfo.representativeName) {
+    let parsedArgs = args.map(arg => {
+      if (loopInfo && arg === loopInfo.representativeName) {
         return loopInfo.currentVal
       } else if (/^'.*'$|^".*"$/.test(arg)) {
         return arg
@@ -109,7 +114,7 @@ const util = {
       }
     })
 
-    return args
+    return parsedArgs
   }
 }
 

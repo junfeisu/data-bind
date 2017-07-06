@@ -12,6 +12,9 @@ var test = new SjfDataBind.default({
     },
     cancel: function () {
       console.log('cancel')
+    },
+    showName: function (username) {
+      console.log(username)
     }
   }
 })

@@ -55,7 +55,9 @@ class render {
       let funcType = util.removePrefix(val.name)
       let func = this.sjf['_' + funcName]
 
-      util.parseArg.bind(this.sjf, funcArgs)
+      funcArgs = util.parseArg.bind(this.sjf)(funcArgs)
+      console.log(funcArgs)
+
       let bindFn = () => {
         func.apply(this.sjf, funcArgs)
       }
