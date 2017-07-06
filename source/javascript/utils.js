@@ -14,6 +14,22 @@ const util = {
     str = str.replace(/\"/g, '')
     return str = str.replace(/\(\)/, '')
   },
+  removeSjfAttr (node) {
+    let attrs = Array.from(node.attributes)
+    let removeAttrs = []
+    // extract the attributes want to remove
+    attrs.map(attr => {
+      if (/^sjf-/.test(attr.localName)) {
+        removeAttrs.push(attr)
+      }
+    })
+    // remove the attributes want to remove
+    removeAttrs.map(removeAttr => {
+      node.removeAttribute(removeAttr.localName)
+    })
+
+    return node
+  },
   extractFuncName (str) {
     str = str.replace(/\([\w|,|'|"|\s]+\)/, '')
     return str
