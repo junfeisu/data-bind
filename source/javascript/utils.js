@@ -9,7 +9,7 @@ const util = {
   removePrefix (str) {
     return str = str.replace(/sjf-/, '')
   },
-  // remove the brackets ()
+  // remove the "
   removeQuotations (str) {
     return str = str.replace(/\"/g, '')
   },

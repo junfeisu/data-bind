@@ -2,7 +2,30 @@ import util from './utils'
 
 const directiveDeal = {
   'sjf-if': function (value) {
-    value.node.style.display = value.expression ? 'block!important' : 'none!important'
+    let logicSymbolReg = /^!{1,2}/
+    let originalExpression = value.expression
+    let loginSymbol = ''
+    let showExpression = originalExpression
+    let clonedNode = value.node.check.cloneNode(true)
+    let parentNode = value.node.parent
+    // 判断是否有逻辑符号!或者!!
+    if (logicSymbolReg.test(originalExpression)) {
+      loginSymbol = originalExpression.match(logicSymbolReg)[0]
+    }
+    // 有逻辑符号时要进行特殊处理
+    if (loginSymbol) {
+      let validExpression = originalExpression.replace(loginSymbol, '')
+      if (this._data.hasOwnProperty(validExpression)) {
+        showExpression = loginSymbol === '!' ? !this._data[validExpression] : !!this._data[validExpression]
+      }
+    }
+    
+    if (this._data.hasOwnProperty(originalExpression)) {
+      showExpression = this._data[originalExpression]
+    }
+
+    // showExpression ? parentNode.appendChild : value.node.parent.removeChild(value.node.check)
+    value.node.check.removeAttribute('sjf-show')
   },
   'sjf-show': function (value) {
     let logicSymbolReg = /^!{1,2}/
