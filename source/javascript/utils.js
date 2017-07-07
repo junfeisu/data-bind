@@ -5,13 +5,21 @@ const util = {
   judgeType (obj) {
     return Object.prototype.toString.call(obj)
   },
+  // judge the arr is the array
+  isArray (arr) {
+    return util.judgeType(arr) === '[object Array]'
+  },
+  // judge is the object not Array, Date
+  isStaictObject (obj) {
+    return util.judgeType(obj) === '[object Object]'
+  },
   // remove the prefix of sjf-
   removePrefix (str) {
     return str = str.replace(/sjf-/, '')
   },
-  // remove the "
+  // remove the outermost layer "
   removeQuotations (str) {
-    return str = str.replace(/\"/g, '')
+    return str = str.replace(/^\"|\"$/g, '')
   },
   removeSjfAttr (node) {
     let attrs = Array.from(node.attributes)
@@ -29,18 +37,19 @@ const util = {
 
     return node
   },
+  // extract the function name of event function
   extractFuncName (str) {
     str = str.replace(/\([\w,'"|\s]*\)/, '')
     return str
   },
+  // extract the arg name of event function
   extractFuncArg (str) {
     let args = []
-    // console.log('replaceBef', str)
+
     str = str.replace(/\w+\(|\)/g, '')
-    // console.log(str)
     if (str) {
       args = str.split(/,\s*/)
-    } 
+    }
     return args
   },
   sortExexuteQueue (property, objArr) {
@@ -50,20 +59,14 @@ const util = {
       return val2 - val1
     })
   },
-  isArray (arr) {
-    return util.judgeType(arr) === '[object Array]'
-  },
-  isStaictObject (obj) {
-    return util.judgeType(obj) === '[object Object]'
-  },
   // deep copy of Object or Arr
   deepCopy (source, dest) {
     if (!util.isArray(source) && !util.isStaictObject(source)) {
       throw 'the source you support can not be copied'
     }
 
-    var copySource = util.isArray(source) ? [] : {}
-    for (var prop in source) {
+    let copySource = util.isArray(source) ? [] : {}
+    for (let prop in source) {
       if (source.hasOwnProperty(prop)) {
         if (util.isArray(source[prop]) || util.isStaictObject(source[prop])) {
           copySource[prop] = util.deepCopy(source[prop])
@@ -84,7 +87,6 @@ const util = {
           resultArr.push(value)
         }
       })
-
       return resultArr
     } else {
       console.error('sjf[error]: the arr in searchChild ' + arr + ' is not Array')
@@ -98,9 +100,7 @@ const util = {
 
     return afterPriority - aheadPriority
   },
-  sortArr (arr, sortFilter) {
-    return arr.sort(sortFilter)
-  },
+  // parse the args extract from the event function
   parseArg (args, loopInfo) {
     let parsedArgs = args.map(arg => {
       if (loopInfo && arg === loopInfo.representativeName) {

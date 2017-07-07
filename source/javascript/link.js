@@ -4,47 +4,37 @@ import util from './utils'
 
 class link {
   constructor (sjf) {
+    let extractReg = /sjf-[a-z]+=\"[^"]+\"|\{\{.+\}\}/g
+
     this.sjf = sjf
-    let hasUnlinkNode = this.sjf._unlinkNodes.length
-    if (hasUnlinkNode) {
-      let extractReg = /sjf-[a-z]+=\"[^"]+\"|\{\{.+\}\}/g
-      this.sjf._unlinkNodes.map(value => {
-        let directives = []
-        if (value.nodeType === 'textNode') {
-          directives = value.check.data.match(extractReg)
-        } else {
-          directives = value.check.cloneNode().outerHTML.match(extractReg)
-        }
-        if (directives.length > 1) {
-          let withNameDirectives = directives.map(directive => this.addDirectiveName(directive))
-          withNameDirectives = util.sortExexuteQueue('name', withNameDirectives)
-          withNameDirectives.map(directive => {
-            this.extractDirective(directive.value, value)
-          })
-        } else {
-          directives.map(directive => {
-            this.extractDirective(directive, value)
-          })
-        }
-      })
-      this._unlinkNodes = []
-      new render(this.sjf)
-    }
+    this.sjf._unlinkNodes.map(value => {
+      let directives = []
+
+      value.nodeType === 'textNode' ? directives = value.check.data.match(extractReg) 
+        : directives = value.check.cloneNode().outerHTML.match(extractReg)
+      if (directives.length > 1) {
+        let withNameDirectives = directives.map(directive => this.addDirectiveName(directive))
+
+        util.sortExexuteQueue('name', withNameDirectives)
+        withNameDirectives.map(directive => {
+          this.extractDirective(directive.value, value)
+        })
+      } else {
+        directives.map(directive => {
+          this.extractDirective(directive, value)
+        })
+      }
+    })
+
+    this.sjf._unlinkNodes = []
+    new render(this.sjf)
   }
 
   addDirectiveName (directive) {
     let slices = directive.split('=')
-    if (slices.length === 0) {
-      return {
-        name: 'sjf-text',
-        value: directive
-      }
-    } else {
-      return {
-        name: slices[0],
-        value: directive
-      }
-    }
+    let slicesLen = slices.length
+
+    return slicesLen ? {name: slices[0], value: directive} : {name: 'sjf-text', value: directive}
   }
 
   // 提取指令

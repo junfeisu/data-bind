@@ -73,7 +73,7 @@ const directiveDeal = {
     let clonedCheckNodeLength = clonedCheckNode.childNodes.length
 
     // 对指令按照优先级进行排序
-    util.sortArr(value.beforeDirectives, util.directiveSortFilter)
+    value.beforeDirectives.sort(util.directiveSortFilter)
 
     for (let i = 0; i < len; i++) {
       // execute the directives

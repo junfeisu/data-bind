@@ -7,7 +7,6 @@
     this.sjf = sjf
     this.searchNode = []
     this.rootContent = this.sjf._el.innerHTML
-    // this.traverseElement(parent, null, true)
     this.circleElement(this.sjf._el, true)
   }
 
@@ -18,8 +17,7 @@
       this.compileNode()
       return
     }
-    child.reverse()
-    child.map(node => {
+    child.reverse().map(node => {
       if (!!node.children.length) {
         this.circleElement(node, false)
         this.sjf._uncompileNodes.push({
@@ -43,12 +41,11 @@
 
   compileNode () {
     let hasUncompile = this.sjf._uncompileNodes.length
-    this.sjf._uncompileNodes.reverse()
-    if (hasUncompile) {
-      this.sjf._uncompileNodes.map(value => {
-        this.hasDirective(value)
-      })
-    }
+
+    this.sjf._uncompileNodes.reverse().map(value => {
+      this.hasDirective(value)
+    })
+
     this.sjf._uncompileNodes = []
     new link(this.sjf)
   }
@@ -56,18 +53,19 @@
   // 检测每个node看是否绑定有指令
   hasDirective (value) {
     let checkReg = /sjf-.+=\".+\"|\{\{.+\}\}/
-    if (checkReg.test(value.check.cloneNode().outerHTML)) {
+    let waitCheckNode = value.check.cloneNode()
+
+    if (checkReg.test(waitCheckNode.outerHTML)) {
       this.sjf._unlinkNodes.push(value)
     }
+    
     Array.prototype.map.call(value.check.childNodes, node => {
-      if (node.nodeType === 3) {
-        if (checkReg.test(node.data)) {
-          this.sjf._unlinkNodes.push({
-            check: node, 
-            parent: value.check, 
-            nodeType: 'textNode'
-          })
-        }
+      if (node.nodeType === 3 && checkReg.test(node.data)) {
+        this.sjf._unlinkNodes.push({
+          check: node, 
+          parent: value.check, 
+          nodeType: 'textNode'
+        })
       }
     })
   }
