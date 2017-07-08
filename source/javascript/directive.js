@@ -1,6 +1,7 @@
 import util from './utils'
 
 function renderOldDom (parent, node, nextSbiling) {
+  console.log(parent)
 }
 
 const directiveDeal = {
@@ -16,9 +17,10 @@ const directiveDeal = {
   'sjf-show': function (value) {
     let showExpression = util.dealLogicSymbol(value.expression, this._data)
     let displayValue = showExpression ? 'block' : 'none'
-    
-    value.node.check.style.setProperty('display', displayValue, 'important')
-    value.node.check.removeAttribute('sjf-show')
+    let checkNode = value.node.check
+
+    checkNode.style.setProperty('display', displayValue, 'important')
+    checkNode.removeAttribute('sjf-show')
   },
   'sjf-for': function (value) {
     // 将表达式通过空格(不限空格数目)给切开
