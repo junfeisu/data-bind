@@ -115,6 +115,20 @@ const util = {
     })
 
     return parsedArgs
+  },
+  dealLogicSymbol (expression) {
+    let result = {
+      symbol: '',
+      expression: expression
+    }
+    let logicSymbolReg = /^!{1,2}/
+
+    if (logicSymbolReg.test(expression)) {
+      result.symbol = expression.match(logicSymbolReg)[0]
+      result.expression = expression.replace(logicSymbolReg, '')
+    }
+
+    return result
   }
 }
 

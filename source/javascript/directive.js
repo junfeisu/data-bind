@@ -1,50 +1,46 @@
 import util from './utils'
 
+function renderOldDom (parent, node, nextSbiling) {
+}
+
 const directiveDeal = {
   'sjf-if': function (value) {
-    let logicSymbolReg = /^!{1,2}/
     let originalExpression = value.expression
-    let loginSymbol = ''
     let showExpression = originalExpression
+    let dealedExpression = util.dealLogicSymbol(originalExpression)
     let clonedNode = value.node.check.cloneNode(true)
     let parentNode = value.node.parent
-    // 判断是否有逻辑符号!或者!!
-    if (logicSymbolReg.test(originalExpression)) {
-      loginSymbol = originalExpression.match(logicSymbolReg)[0]
-    }
-    // 有逻辑符号时要进行特殊处理
-    if (loginSymbol) {
-      let validExpression = originalExpression.replace(loginSymbol, '')
-      if (this._data.hasOwnProperty(validExpression)) {
-        showExpression = loginSymbol === '!' ? !this._data[validExpression] : !!this._data[validExpression]
-      }
-    }
+    let nextSbiling = value.node.nextSibling
     
-    if (this._data.hasOwnProperty(originalExpression)) {
+    // 有逻辑符号时要进行特殊处理
+    if (dealedExpression.symbol) {
+      let validExpression = dealedExpression.expression
+      if (this._data.hasOwnProperty(validExpression)) {
+        showExpression = dealedExpression.symbol === '!' ? !this._data[validExpression] : !!this._data[validExpression]
+      } else {
+        showExpression = dealedExpression.symbol === '!' ? !validExpression : !!validExpression
+      }
+    } else if (this._data.hasOwnProperty(originalExpression)) {
       showExpression = this._data[originalExpression]
     }
-
-    // showExpression ? parentNode.appendChild : value.node.parent.removeChild(value.node.check)
+    
+    showExpression ? renderOldDom(parentNode, clonedNode, nextSbiling) : value.node.parent.removeChild(value.node.check)
     value.node.check.removeAttribute('sjf-show')
   },
   'sjf-show': function (value) {
-    let logicSymbolReg = /^!{1,2}/
     let originalExpression = value.expression
-    let loginSymbol = ''
     let showExpression = originalExpression
-    // 判断是否有逻辑符号!或者!!
-    if (logicSymbolReg.test(originalExpression)) {
-      loginSymbol = originalExpression.match(logicSymbolReg)[0]
-    }
+    let dealedExpression = util.dealLogicSymbol(originalExpression)
+
     // 有逻辑符号时要进行特殊处理
-    if (loginSymbol) {
-      let validExpression = originalExpression.replace(loginSymbol, '')
+    if (dealedExpression.symbol) {
+      let validExpression = dealedExpression.expression
       if (this._data.hasOwnProperty(validExpression)) {
-        showExpression = loginSymbol === '!' ? !this._data[validExpression] : !!this._data[validExpression]
+        showExpression = dealedExpression.symbol === '!' ? !this._data[validExpression] : !!this._data[validExpression]
+      } else {
+        showExpression = dealedExpression.symbol === '!' ? !validExpression : !!validExpression
       }
-    }
-    
-    if (this._data.hasOwnProperty(originalExpression)) {
+    } else if (this._data.hasOwnProperty(originalExpression)) {
       showExpression = this._data[originalExpression]
     }
 
