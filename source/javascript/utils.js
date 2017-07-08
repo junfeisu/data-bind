@@ -116,19 +116,24 @@ const util = {
 
     return parsedArgs
   },
-  dealLogicSymbol (expression) {
-    let result = {
-      symbol: '',
-      expression: expression
-    }
+  dealLogicSymbol (expression, dataSource) {
     let logicSymbolReg = /^!{1,2}/
 
+    // 有逻辑符号时要进行特殊处理
     if (logicSymbolReg.test(expression)) {
-      result.symbol = expression.match(logicSymbolReg)[0]
-      result.expression = expression.replace(logicSymbolReg, '')
+      let symbol = expression.match(logicSymbolReg)[0]
+      let validExpression = expression.replace(logicSymbolReg, '')
+
+      if (dataSource.hasOwnProperty(validExpression)) {
+        expression = symbol === '!' ? !dataSource[validExpression] : !!dataSource[validExpression]
+      } else {
+        expression = symbol === '!' ? !validExpression : !!validExpression
+      }
+    } else if (dataSource.hasOwnProperty(expression)) {
+      expression = dataSource[expression]
     }
 
-    return result
+    return expression
   }
 }
 

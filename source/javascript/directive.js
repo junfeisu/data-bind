@@ -5,46 +5,18 @@ function renderOldDom (parent, node, nextSbiling) {
 
 const directiveDeal = {
   'sjf-if': function (value) {
-    let originalExpression = value.expression
-    let showExpression = originalExpression
-    let dealedExpression = util.dealLogicSymbol(originalExpression)
+    let showExpression = util.dealLogicSymbol(value.expression, this._data)
     let clonedNode = value.node.check.cloneNode(true)
     let parentNode = value.node.parent
     let nextSbiling = value.node.nextSibling
-    
-    // 有逻辑符号时要进行特殊处理
-    if (dealedExpression.symbol) {
-      let validExpression = dealedExpression.expression
-      if (this._data.hasOwnProperty(validExpression)) {
-        showExpression = dealedExpression.symbol === '!' ? !this._data[validExpression] : !!this._data[validExpression]
-      } else {
-        showExpression = dealedExpression.symbol === '!' ? !validExpression : !!validExpression
-      }
-    } else if (this._data.hasOwnProperty(originalExpression)) {
-      showExpression = this._data[originalExpression]
-    }
     
     showExpression ? renderOldDom(parentNode, clonedNode, nextSbiling) : value.node.parent.removeChild(value.node.check)
     value.node.check.removeAttribute('sjf-show')
   },
   'sjf-show': function (value) {
-    let originalExpression = value.expression
-    let showExpression = originalExpression
-    let dealedExpression = util.dealLogicSymbol(originalExpression)
-
-    // 有逻辑符号时要进行特殊处理
-    if (dealedExpression.symbol) {
-      let validExpression = dealedExpression.expression
-      if (this._data.hasOwnProperty(validExpression)) {
-        showExpression = dealedExpression.symbol === '!' ? !this._data[validExpression] : !!this._data[validExpression]
-      } else {
-        showExpression = dealedExpression.symbol === '!' ? !validExpression : !!validExpression
-      }
-    } else if (this._data.hasOwnProperty(originalExpression)) {
-      showExpression = this._data[originalExpression]
-    }
-
+    let showExpression = util.dealLogicSymbol(value.expression, this._data)
     let displayValue = showExpression ? 'block' : 'none'
+    
     value.node.check.style.setProperty('display', displayValue, 'important')
     value.node.check.removeAttribute('sjf-show')
   },
