@@ -1,3 +1,6 @@
 node_modules/
 build/*
 build/js/*.js
+.DS_store
+src/*/.DS_Store
+example/*/.DS_Store
